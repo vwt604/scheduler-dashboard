@@ -39,7 +39,7 @@ import {
 class Dashboard extends Component {
 
   state = {
-    loading: false, //hides or displays loading state
+    loading: false, 
     focused: null,
     days: [], 
     appointments: {},
@@ -48,11 +48,10 @@ class Dashboard extends Component {
 
   selectPanel(id) {
     this.setState(previousState => ({
-      focused: previousState.focused !== null ? null : id // lets focused to go back to previous state
+      focused: previousState.focused !== null ? null : id 
     }));
   }
 
-  // Adding local storage: When we get the values out of storage, we use the JSON.parse function to convert the string back to JavaScript values
   componentDidMount() {
     const focused = JSON.parse(localStorage.getItem("focused"));
 
@@ -69,10 +68,8 @@ class Dashboard extends Component {
       });
     });
 
-    //WebSocket connection: updates the state when we book or cancel an interview.
     this.socket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL) 
 
-    //event handler converts the string data to JavaScript data types. If the data is an object with the correct type, then we update the state
     this.socket.onmessage = event => {
       const data = JSON.parse(event.data);
     
@@ -82,14 +79,13 @@ class Dashboard extends Component {
         );
       }
     };
-    
+
 
     if (focused) {
       this.setState({ focused });
     }
   }
 
-  // Adding local storage: We use the JSON.stringify function to convert our values before writing them to the localStorage
   componentDidUpdate(previousProps, previousState) {
     if (previousState.focused !== this.state.focused) {
       localStorage.setItem("focused", JSON.stringify(this.state.focused));
@@ -101,9 +97,8 @@ class Dashboard extends Component {
   }
 
   render() {
-    // console.log('Fetched appt data', this.state)
     const dashboardClasses = classnames("dashboard", {
-      "dashboard--focused": this.state.focused //conditional CSS 
+      "dashboard--focused": this.state.focused 
     });
 
     if(this.state.loading) {
@@ -111,7 +106,7 @@ class Dashboard extends Component {
     }
 
     const panels = data
-      .filter(panel => this.state.focused === null || this.state.focused === panel.id) //handling state: showing selected panel 
+      .filter(panel => this.state.focused === null || this.state.focused === panel.id) 
       .map(panel => (
         <Panel 
           key={panel.id}

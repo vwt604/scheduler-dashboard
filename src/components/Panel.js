@@ -3,7 +3,7 @@ import React, { Component } from "react";
 class Panel extends Component {
   state = {  }
   render() {
-    const { label, value, onSelect } = this.props; // the props obj belongs to the instance
+    const { label, value, onSelect } = this.props; 
 
     return (
       <section className="dashboard__panel" onClick={onSelect}>
