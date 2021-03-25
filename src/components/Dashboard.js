@@ -4,6 +4,7 @@ import axios from "axios";
 
 import Loading from "components/Loading.js";
 import Panel from "components/Panel.js";
+import { setInterview } from "helpers/reducers";
 
 import {
   getTotalInterviews,
@@ -68,6 +69,21 @@ class Dashboard extends Component {
       });
     });
 
+    //WebSocket connection: updates the state when we book or cancel an interview.
+    this.socket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL) 
+
+    //event handler converts the string data to JavaScript data types. If the data is an object with the correct type, then we update the state
+    this.socket.onmessage = event => {
+      const data = JSON.parse(event.data);
+    
+      if (typeof data === "object" && data.type === "SET_INTERVIEW") {
+        this.setState(previousState =>
+          setInterview(previousState, data.id, data.interview)
+        );
+      }
+    };
+    
+
     if (focused) {
       this.setState({ focused });
     }
@@ -79,8 +95,10 @@ class Dashboard extends Component {
       localStorage.setItem("focused", JSON.stringify(this.state.focused));
     }
   }
-  
 
+  componentWillUnmount() {
+    this.socket.close();
+  }
 
   render() {
     // console.log('Fetched appt data', this.state)
@@ -99,8 +117,8 @@ class Dashboard extends Component {
           key={panel.id}
           id={panel.id}
           label={panel.label}
-          value={panel.value}
-          onSelect={event => this.selectPanel(panel.id)}
+          value={panel.getValue(this.state)}
+          onSelect={() => this.selectPanel(panel.id)}
         />
       )) 
 
@@ -113,3 +131,4 @@ class Dashboard extends Component {
 }
 
 export default Dashboard;
+
